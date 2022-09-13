@@ -121,8 +121,8 @@ def get_random_phrase():
 def get_scoreboard_short(league, week=None):
     # Gets current week's scoreboard
     box_scores = league.box_scores(week=week)
-    score = ['%s %.2f - %.2f %s' % (i.home_team.team_abbrev, i.home_score if i.home_team.team_abbrev != '100' else 100.0,
-                                    i.away_score if i.away_team.team_abbrev != '100' else 100.0, i.away_team.team_abbrev) for i in box_scores
+    score = ['%s %.2f - %.2f %s' % (i.home_team.team_abbrev, i.home_score if i.home_team.team_abbrev != GHOST_TEAM_ABBREV else 100.0,
+                                    i.away_score if i.away_team.team_abbrev != GHOST_TEAM_ABBREV else 100.0, i.away_team.team_abbrev) for i in box_scores
              if i.away_team]
     text = ['Score Update'] + score
     return '\n'.join(text)
@@ -388,7 +388,7 @@ def get_trophies(league, week=None):
                 close_winner = i.away_team.team_name
                 close_loser = i.home_team.team_name
         if abs(i.away_score - i.home_score) > biggest_blowout and \
-            i.home_team.team_abbrev != '100' and i.away_team.team_abbrev != '100':
+            i.home_team.team_abbrev != GHOST_TEAM_ABBREV and i.away_team.team_abbrev != GHOST_TEAM_ABBREV:
             biggest_blowout = abs(i.away_score - i.home_score)
             if i.away_score - i.home_score < 0:
                 ownerer_team_name = i.home_team.team_name
@@ -635,10 +635,10 @@ if __name__ == '__main__':
                   day_of_week='tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_final'], id='final',
-                  day_of_week='tue', hour=10, minute=55, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='tue', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
-                    day_of_week='wed', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                    day_of_week='wed', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
                     timezone=my_timezone, replace_existing=True)
     if daily_waiver:
         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
@@ -649,12 +649,12 @@ if __name__ == '__main__':
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=game_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard1',
-                  day_of_week='fri,mon', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='fri,mon', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
 
     if monitor_report:
         sched.add_job(bot_main, 'cron', ['get_monitor'], id='monitor',
-                    day_of_week='sun', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                    day_of_week='sun', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
                     timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard2',
