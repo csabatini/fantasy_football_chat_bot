@@ -6,6 +6,8 @@ from datetime import date
 from apscheduler.schedulers.blocking import BlockingScheduler
 from espn_api.football import League
 
+GHOST_TEAM_ABBREV = '100'
+
 
 class GroupMeException(Exception):
     pass
@@ -119,8 +121,8 @@ def get_random_phrase():
 def get_scoreboard_short(league, week=None):
     # Gets current week's scoreboard
     box_scores = league.box_scores(week=week)
-    score = ['%s %.2f - %.2f %s' % (i.home_team.team_abbrev, i.home_score,
-                                    i.away_score, i.away_team.team_abbrev) for i in box_scores
+    score = ['%s %.2f - %.2f %s' % (i.home_team.team_abbrev, i.home_score if i.home_team.team_abbrev != '100' else 100.0,
+                                    i.away_score if i.away_team.team_abbrev != '100' else 100.0, i.away_team.team_abbrev) for i in box_scores
              if i.away_team]
     text = ['Score Update'] + score
     return '\n'.join(text)
@@ -361,18 +363,19 @@ def get_trophies(league, week=None):
     biggest_blowout = -1
     blown_out_team_name = ''
     ownerer_team_name = ''
+    ghost_score_str = []
 
     for i in matchups:
         if i.home_score > high_score:
             high_score = i.home_score
             high_team_name = i.home_team.team_name
-        if i.home_score < low_score:
+        if i.home_score < low_score and i.home_team.team_abbrev != GHOST_TEAM_ABBREV:
             low_score = i.home_score
             low_team_name = i.home_team.team_name
         if i.away_score > high_score:
             high_score = i.away_score
             high_team_name = i.away_team.team_name
-        if i.away_score < low_score:
+        if i.away_score < low_score and i.away_team.team_abbrev != GHOST_TEAM_ABBREV:
             low_score = i.away_score
             low_team_name = i.away_team.team_name
         if i.away_score - i.home_score != 0 and \
@@ -384,7 +387,8 @@ def get_trophies(league, week=None):
             else:
                 close_winner = i.away_team.team_name
                 close_loser = i.home_team.team_name
-        if abs(i.away_score - i.home_score) > biggest_blowout:
+        if abs(i.away_score - i.home_score) > biggest_blowout and \
+            i.home_team.team_abbrev != '100' and i.away_team.team_abbrev != '100':
             biggest_blowout = abs(i.away_score - i.home_score)
             if i.away_score - i.home_score < 0:
                 ownerer_team_name = i.home_team.team_name
@@ -392,13 +396,23 @@ def get_trophies(league, week=None):
             else:
                 ownerer_team_name = i.away_team.team_name
                 blown_out_team_name = i.home_team.team_name
+        if i.home_team.team_abbrev == GHOST_TEAM_ABBREV:
+            player_score = i.away_score
+            player_team = i.away_team.team_name
+            result = 'won' if player_score > i.home_score else 'lost'
+            ghost_score_str = ['Ghost match: %s %s with %.2f points' % (player_team, result, player_score)]
+        if i.away_team.team_abbrev == GHOST_TEAM_ABBREV:
+            player_score = i.home_score
+            player_team = i.home_team.team_name
+            result = 'won' if player_score > i.away_score else 'lost'
+            ghost_score_str = ['Ghost match: %s %s with %.2f points' % (player_team, result, player_score)]
 
     low_score_str = ['Low score: %s with %.2f points' % (low_team_name, low_score)]
     high_score_str = ['High score: %s with %.2f points' % (high_team_name, high_score)]
     close_score_str = ['%s barely beat %s by a margin of %.2f' % (close_winner, close_loser, closest_score)]
     blowout_str = ['%s blown out by %s by a margin of %.2f' % (blown_out_team_name, ownerer_team_name, biggest_blowout)]
 
-    text = ['Trophies of the week:'] + low_score_str + high_score_str + close_score_str + blowout_str
+    text = ['Trophies of the week:'] + low_score_str + high_score_str + ghost_score_str + close_score_str + blowout_str
     return '\n'.join(text)
 
 
@@ -621,7 +635,7 @@ if __name__ == '__main__':
                   day_of_week='tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_final'], id='final',
-                  day_of_week='tue', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='tue', hour=10, minute=55, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
                     day_of_week='wed', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
