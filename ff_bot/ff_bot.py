@@ -631,15 +631,15 @@ if __name__ == '__main__':
     sched.add_job(bot_main, 'cron', ['get_close_scores'], id='close_scores',
                   day_of_week='mon', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=game_timezone, replace_existing=True)
-    sched.add_job(bot_main, 'cron', ['get_power_rankings'], id='power_rankings',
-                  day_of_week='tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
-                  timezone=my_timezone, replace_existing=True)
+    #sched.add_job(bot_main, 'cron', ['get_power_rankings'], id='power_rankings',
+    #              day_of_week='tue', hour=18, minute=30, start_date=ff_start_date, end_date=ff_end_date,
+    #              timezone=my_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_final'], id='final',
-                  day_of_week='tue', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='tue', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
-    sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
-                    day_of_week='wed', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
-                    timezone=my_timezone, replace_existing=True)
+    #sched.add_job(bot_main, 'cron', ['get_standings'], id='standings',
+    #                day_of_week='wed', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
+    #                timezone=my_timezone, replace_existing=True)
     if daily_waiver:
         sched.add_job(bot_main, 'cron', ['get_waiver_report'], id='waiver_report',
                       day_of_week='mon, tue, thu, fri, sat, sun', hour=7, minute=31, start_date=ff_start_date, end_date=ff_end_date,
@@ -649,12 +649,12 @@ if __name__ == '__main__':
                   day_of_week='thu', hour=19, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=game_timezone, replace_existing=True)
     sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard1',
-                  day_of_week='fri,mon', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
+                  day_of_week='fri,mon', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                   timezone=my_timezone, replace_existing=True)
 
     if monitor_report:
         sched.add_job(bot_main, 'cron', ['get_monitor'], id='monitor',
-                    day_of_week='sun', hour=7, minute=0, start_date=ff_start_date, end_date=ff_end_date,
+                    day_of_week='sun', hour=7, minute=30, start_date=ff_start_date, end_date=ff_end_date,
                     timezone=my_timezone, replace_existing=True)
 
     sched.add_job(bot_main, 'cron', ['get_scoreboard_short'], id='scoreboard2',
