@@ -399,12 +399,12 @@ def get_trophies(league, week=None):
         if i.home_team.team_abbrev == GHOST_TEAM_ABBREV:
             player_score = i.away_score
             player_team = i.away_team.team_name
-            result = 'won' if player_score > i.home_score else 'lost'
+            result = 'won' if player_score > 100.0 else 'lost'
             ghost_score_str = ['Ghost match: %s %s with %.2f points' % (player_team, result, player_score)]
         if i.away_team.team_abbrev == GHOST_TEAM_ABBREV:
             player_score = i.home_score
             player_team = i.home_team.team_name
-            result = 'won' if player_score > i.away_score else 'lost'
+            result = 'won' if player_score > 100.0 else 'lost'
             ghost_score_str = ['Ghost match: %s %s with %.2f points' % (player_team, result, player_score)]
 
     low_score_str = ['Low score: %s with %.2f points' % (low_team_name, low_score)]
@@ -412,7 +412,7 @@ def get_trophies(league, week=None):
     close_score_str = ['%s barely beat %s by a margin of %.2f' % (close_winner, close_loser, closest_score)]
     blowout_str = ['%s blown out by %s by a margin of %.2f' % (blown_out_team_name, ownerer_team_name, biggest_blowout)]
 
-    text = ['Trophies of the week:'] + low_score_str + high_score_str + ghost_score_str + close_score_str + blowout_str
+    text = ['Highlights of the week:'] + low_score_str + high_score_str + ghost_score_str + close_score_str + blowout_str
     return '\n'.join(text)
 
 
